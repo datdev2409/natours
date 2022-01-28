@@ -1,0 +1,29 @@
+{
+	"name": "natours",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "nodemon index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+ssh://git@github.com/datdev2409/natours.git"
+	},
+	"author": "congdat <datdev2409@gmail.com>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/datdev2409/natours/issues"
+	},
+	"homepage": "https://github.com/datdev2409/natours#readme",
+	"dependencies": {
+		"dotenv": "^14.3.2",
+		"express": "^4.17.2",
+		"mongoose": "^6.1.8",
+		"morgan": "^1.10.0"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.15"
+	}
+}
