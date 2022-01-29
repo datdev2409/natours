@@ -1,4 +1,5 @@
 const Tour = require('../models/tourModel');
+const APIFeatures = require('../utils/apiFeatures');
 
 function createResponse(status, data, message = '') {
 	return { status, data, message };
@@ -7,9 +8,22 @@ function createResponse(status, data, message = '') {
 class TourController {
 	async getAllTours(req, res) {
 		try {
-			const query = await Tour.find({});
-			res.status(200).json(createResponse('success', { tour: query }));
+			const tours = await new APIFeatures(Tour.find(), req.query)
+				.filter()
+				.sort()
+				.limitField()
+				.limitResult()
+				.paginate().query;
+			const responseData = {
+				status: 'success',
+				data: {
+					numTours: tours.length,
+					tour: tours
+				}
+			};
+			res.status(200).json(responseData);
 		} catch (error) {
+			console.log(error);
 			res.status(404).json(createResponse('fail', '', error));
 		}
 	}
