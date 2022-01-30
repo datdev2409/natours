@@ -32,6 +32,7 @@ app.all('*', (req, res) => {
 
 app.use(errorHanlder);
 
+console.log(process.env.NODE_ENV);
 // Server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
