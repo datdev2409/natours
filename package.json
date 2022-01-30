@@ -5,7 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "nodemon index.js",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"debug": "ndb index.js"
 	},
 	"repository": {
 		"type": "git",
@@ -24,6 +25,7 @@
 		"morgan": "^1.10.0"
 	},
 	"devDependencies": {
+		"ndb": "^1.1.5",
 		"nodemon": "^2.0.15"
 	}
 }

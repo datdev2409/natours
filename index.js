@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const errorHanlder = require('./middlewares/errorHandler');
 const tourRouter = require('./routes/tourRoutes');
 require('dotenv').config();
 
@@ -22,7 +23,14 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/api/v1/tours', tourRouter);
-// app.use('/api/v1/users', userRoutes);
+app.all('*', (req, res) => {
+	res.status(404).json({
+		status: 'fail',
+		message: `Can't find ${req.originalUrl} on this server`
+	});
+});
+
+app.use(errorHanlder);
 
 // Server
 const port = process.env.PORT || 3000;
