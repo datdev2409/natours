@@ -1,7 +1,18 @@
 class APIFeatures {
-	constructor(query, queryObj) {
+	constructor(query, queryObj, options) {
 		this.query = query;
 		this.queryObj = queryObj;
+
+		if (options) {
+			return options.reduce((acc, cur) => {
+				if (this[cur]) return acc[cur]();
+				return acc;
+			}, this);
+		}
+	}
+
+	all() {
+		return this.filter().sort().limitField().limitResult().paginate();
 	}
 
 	filter() {

@@ -45,13 +45,24 @@ const tourSchema = new mongoose.Schema({
 		type: String,
 		required: [true, 'A tour must have a cover image']
 	},
-	images: [[String]],
-	startDates: [[Date]],
+	images: [String],
+	startDates: [Date],
 	createdAt: {
 		type: Date,
-		default: Date.now(),
-		select: false
+		default: Date.now()
+		// select: false
 	}
+});
+tourSchema.set('toJSON', { virtuals: true });
+tourSchema.set('toObject', { virtuals: true });
+
+tourSchema.virtual('dateDiff').get(function () {
+	const milisecPerDay = 24 * 60 * 60 * 1000;
+	return (Date.now() - this.createdAt) / milisecPerDay;
+});
+
+tourSchema.virtual('durationWeek').get(function () {
+	return this.duration / 7;
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
