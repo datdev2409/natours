@@ -5,10 +5,16 @@ const errorHanlder = require('./middlewares/errorHandler');
 const tourRouter = require('./routes/tourRoutes');
 require('dotenv').config();
 
+// handle uncaught exception
+process.on('uncaughtException', err => {
+	console.error('Uncaught exception', err.name, err.message);
+	process.exit(1);
+});
+
 const app = express();
 
 // Connect DB
-connectDB().catch(err => console.log(err));
+connectDB();
 
 async function connectDB() {
 	const DB = process.env.DB || 'mongodb://localhost:27017/test';
@@ -23,6 +29,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/api/v1/tours', tourRouter);
+// unhandeled routes
 app.all('*', (req, res) => {
 	res.status(404).json({
 		status: 'fail',
@@ -32,9 +39,16 @@ app.all('*', (req, res) => {
 
 app.use(errorHanlder);
 
-console.log(process.env.NODE_ENV);
 // Server
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
 	console.log(`Server is running at ${port}`);
+});
+
+// Handle unhandled rejection
+process.on('unhandledRejection', err => {
+	console.log(err.name, err.message);
+	server.close(() => {
+		process.exit(1);
+	});
 });

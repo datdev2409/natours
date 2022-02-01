@@ -19,13 +19,11 @@ async function connectDB() {
 // Function handler
 const addToDB = async data => {
 	await Tour.insertMany(data);
-	console.log('Added');
 	process.exit();
 };
 
 const cleanDB = async data => {
 	await Tour.deleteMany();
-	console.log('Deleted');
 	process.exit();
 };
 
