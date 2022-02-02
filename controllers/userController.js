@@ -15,13 +15,6 @@ exports.getUser = catchAsync(async (req, res) => {
 	res.status(200).json(jsonRes);
 });
 
-exports.createUser = catchAsync(async (req, res) => {
-	const data = req.body;
-	const newUser = await User.create(data);
-	const jsonRes = new AppResponse('success', { user: newUser }).toJson();
-	res.status(200).json(jsonRes);
-});
-
 exports.deleteUser = catchAsync(async (req, res) => {
 	const id = req.params.id;
 	const user = await User.findByIdAndDelete(id);

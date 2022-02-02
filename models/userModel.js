@@ -22,25 +22,32 @@ const userSchema = new mongoose.Schema({
 		trim: true,
 		required: true,
 		minlength: [8, 'Password must have at least 8 characters'],
-		maxlength: [25, 'Password must have at most 25 characters']
+		maxlength: [25, 'Password must have at most 25 characters'],
+		select: false
 	},
-	password_confirmation: {
+	passwordConfirm: {
 		type: String,
 		trim: true,
 		required: true,
 		validate: {
-			validator: function (password_confirmation) {
-				return password_confirmation === this.password;
+			validator: function (confirm) {
+				return confirm === this.password;
 			},
 			message: 'The password confirmation does not match'
 		}
 	}
 });
 
-userSchema.pre('save', async function () {
+userSchema.pre('save', async function (next) {
+	// Only encrypt password, if password is actually modified
 	this.password = await bcrypt.hash(this.password, 12);
-	this.password_confirmation = undefined;
+	this.passwordConfirm = undefined;
+	next();
 });
+
+userSchema.methods.verifyPassword = async function (plainPassword) {
+	return await bcrypt.compare(plainPassword, this.password);
+};
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
