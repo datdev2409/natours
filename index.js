@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const errorHanlder = require('./middlewares/errorHandler');
 const tourRouter = require('./routes/tourRoutes');
+const userRouter = require('./routes/userRoutes');
 require('dotenv').config();
 
 // handle uncaught exception
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 // unhandeled routes
 app.all('*', (req, res) => {
 	res.status(404).json({

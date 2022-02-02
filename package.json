@@ -20,10 +20,12 @@
 	},
 	"homepage": "https://github.com/datdev2409/natours#readme",
 	"dependencies": {
+		"bcrypt": "^5.0.1",
 		"dotenv": "^14.3.2",
 		"express": "^4.17.2",
 		"mongoose": "^6.1.8",
-		"morgan": "^1.10.0"
+		"morgan": "^1.10.0",
+		"validator": "^13.7.0"
 	},
 	"devDependencies": {
 		"ndb": "^1.1.5",
