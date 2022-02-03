@@ -48,14 +48,12 @@ userSchema.pre('save', async function (next) {
 	next();
 });
 
-// userSchema.post('updateOne', async function (next) {
-// 	const user = User.find(this);
-// 	console.log(user);
-// 	// if (this.isModified('password')) {
-// 	// 	this.passwordChangedAt = Date.now();
-// 	// }
-// 	next();
-// });
+userSchema.pre('updateOne', async function (next) {
+	if (this.getUpdate()['password']) {
+		this.set({ passwordChangedAt: new Date() });
+	}
+	next();
+});
 
 userSchema.methods.verifyPassword = async function (plainPassword, password) {
 	return await bcrypt.compare(plainPassword, password);
