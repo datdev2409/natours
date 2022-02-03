@@ -35,6 +35,9 @@ const userSchema = new mongoose.Schema({
 			},
 			message: 'The password confirmation does not match'
 		}
+	},
+	passwordChangedAt: {
+		type: Date
 	}
 });
 
@@ -45,8 +48,22 @@ userSchema.pre('save', async function (next) {
 	next();
 });
 
-userSchema.methods.verifyPassword = async function (plainPassword) {
-	return await bcrypt.compare(plainPassword, this.password);
+// userSchema.post('updateOne', async function (next) {
+// 	const user = User.find(this);
+// 	console.log(user);
+// 	// if (this.isModified('password')) {
+// 	// 	this.passwordChangedAt = Date.now();
+// 	// }
+// 	next();
+// });
+
+userSchema.methods.verifyPassword = async function (plainPassword, password) {
+	return await bcrypt.compare(plainPassword, password);
+};
+
+userSchema.methods.isPasswordChangeAfter = async function (JWTTimestamp) {
+	if (!this.passwordChangedAt) return false;
+	return Date.parse(this.passwordChangedAt) / 1000 >= JWTTimestamp;
 };
 
 const User = mongoose.model('User', userSchema);

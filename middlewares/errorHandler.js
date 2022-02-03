@@ -45,6 +45,16 @@ function handleCastErrorDB(err) {
 	return new AppError(message, 400);
 }
 
+function handleJWTError() {
+	const message = `JWT is not valid`;
+	return new AppError(message, 401);
+}
+
+function handleExpiredJWT() {
+	const message = `JWT is expired, please login again`;
+	return new AppError(message, 401);
+}
+
 module.exports = (err, req, res, next) => {
 	err.statusCode = err.statusCode || 500;
 	err.status = err.status || 'error';
@@ -57,6 +67,10 @@ module.exports = (err, req, res, next) => {
 			err = hanldeDuplicateFieldDB(err);
 		} else if (err.name == 'ValidationError') {
 			err = handleValidationErrorDB(err);
+		} else if (err.name == 'JsonWebTokenError') {
+			err = handleJWTError();
+		} else if (err.name == 'TokenExpiredError') {
+			err = handleExpiredJWT();
 		}
 		sendErrProd(err, res);
 	}

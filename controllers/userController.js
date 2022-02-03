@@ -25,7 +25,7 @@ exports.deleteUser = catchAsync(async (req, res) => {
 exports.updateUser = catchAsync(async (req, res) => {
 	const id = req.params.id;
 	const data = req.body;
-	const user = await User.findByIdAndUpdate(id, data);
+	const user = await User.updateOne({ _id: id }, data);
 	const jsonRes = new AppResponse('success', { user: user }).toJson();
 	res.status(200).json(jsonRes);
 });
