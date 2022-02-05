@@ -8,6 +8,10 @@ router.post('/signup', authController.signup);
 router.post('/signin', authController.signin);
 router.post('/admin/signup', authController.adminSignup);
 
+// Sent email to user, with reset token
+router.post('/forgotPassword', authController.forgotPasword);
+router.post('/resetPassword/:token', authController.resetPassword);
+
 router
 	.route('/:id')
 	.get(userController.getUser)
