@@ -2,11 +2,16 @@ const User = require('../models/userModel');
 const AppResponse = require('../utils/appResponse');
 const catchAsync = require('../utils/catchAsync');
 const jwt = require('jsonwebtoken');
-const fs = require('fs');
-const path = require('path');
 const AppError = require('../utils/appError');
 const { promisify } = require('util');
 const sendEmail = require('../utils/email');
+
+function signJWT(data = {}) {
+	const privateKey = process.env.JWT_SECRET;
+	const expiresIn = process.env.JWT_EXPIRES_IN;
+	const token = jwt.sign(data, privateKey, { expiresIn });
+	return token;
+}
 
 exports.signup = catchAsync(async (req, res) => {
 	// If use all data to create user, everybody can register a role as admin
@@ -20,9 +25,7 @@ exports.signup = catchAsync(async (req, res) => {
 	});
 
 	// Generate JWT
-	const privateKey = process.env.JWT_SECRET;
-	const expiresIn = process.env.JWT_EXPIRES_IN;
-	const token = jwt.sign({ id: newUser._id }, privateKey, { expiresIn });
+	const token = signJWT({ id: newUser._id });
 
 	// Response data with JWT to client
 	const jsonRes = new AppResponse('success', {
@@ -43,9 +46,7 @@ exports.adminSignup = catchAsync(async (req, res) => {
 	});
 
 	// Generate JWT
-	const privateKey = process.env.JWT_SECRET;
-	const expiresIn = process.env.JWT_EXPIRES_IN;
-	const token = jwt.sign({ id: newUser._id }, privateKey, { expiresIn });
+	const token = signJWT({ id: newUser._id });
 
 	// Response data with JWT to client
 	const jsonRes = new AppResponse('success', {
@@ -67,9 +68,7 @@ exports.signin = catchAsync(async (req, res) => {
 	const match = await user.verifyPassword(password, user.password);
 
 	if (match) {
-		const privateKey = process.env.JWT_SECRET;
-		const expiresIn = process.env.JWT_EXPIRES_IN;
-		const token = jwt.sign({ id: user._id }, privateKey, { expiresIn });
+		const token = signJWT({ id: user._id });
 		const jsonRes = new AppResponse('success', {
 			jwt: token
 		}).toJson();
@@ -159,9 +158,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 	user.passwordResetExpires = undefined;
 	await user.save();
 
-	const privateKey = process.env.JWT_SECRET;
-	const expiresIn = process.env.JWT_EXPIRES_IN;
-	const jwToken = jwt.sign({ id: user._id }, privateKey, { expiresIn });
+	const jwToken = signJWT({ id: user._id });
 
 	res.status(200).json({
 		status: 'success',

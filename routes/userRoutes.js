@@ -14,9 +14,9 @@ router.post('/resetPassword/:token', authController.resetPassword);
 
 router
 	.use(authController.protect)
-	.post('/changePassword', userController.updatePassword);
-
-router.post('/updateme', authController.protect, userController.updateMe);
+	.post('/changePassword', userController.updatePassword)
+	.post('/updateme', userController.updateMe)
+	.delete('/deleteme', userController.deleteMe);
 
 router
 	.route('/:id')

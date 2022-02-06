@@ -2,6 +2,15 @@ const User = require('../models/userModel');
 const AppResponse = require('../utils/appResponse');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const createUserToken = require('../utils/createUserToken');
+
+function filterObj(obj, allowedFields) {
+	let newObj = {};
+	Object.keys(obj).forEach(key => {
+		if (allowedFields.includes(key)) newObj[key] = obj[key];
+	});
+	return newObj;
+}
 
 exports.getAllUsers = catchAsync(async (req, res) => {
 	const users = await User.find({});
@@ -63,18 +72,27 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 		);
 	}
 
-	const { name, email } = req.body;
-	const user = await User.findByIdAndUpdate(
-		req.user.id,
-		{ name, email },
-		{
-			new: true,
-			runValidators: true
-		}
-	);
+	const filteredObj = filterObj(req.body, ['name', 'email']);
+	const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredObj, {
+		new: true,
+		runValidators: true
+	});
 
-	res.status(200).json({
-		status: 'success',
-		message: 'Updated'
+	const jsonRes = new AppResponse('success', { user: updatedUser });
+	res.status(200).json(jsonRes);
+});
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+	const user = await User.findById(req.user.id).select('+password');
+
+	const password = req.body.password;
+	const match = await user.verifyPassword(password, user.password);
+	if (!match) {
+		return next(new AppError("Password doesn't not match", 403));
+	}
+	await User.findByIdAndRemove(user.id);
+
+	res.status(204).json({
+		status: 'success'
 	});
 });
