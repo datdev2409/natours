@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema({
 		trim: true,
 		required: true,
 		validate: {
+			// this only defined when use save and create (not update)
 			validator: function (confirm) {
 				return confirm === this.password;
 			},
@@ -71,6 +72,7 @@ userSchema.pre('updateOne', async function (next) {
 });
 
 userSchema.methods.verifyPassword = async function (plainPassword, password) {
+	password = password || this.password;
 	return await bcrypt.compare(plainPassword, password);
 };
 

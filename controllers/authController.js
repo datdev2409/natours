@@ -88,7 +88,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 	// 2) Verify JWT
 	const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-	console.log(decoded);
 
 	// 3) Check user exit
 	const user = await User.findById(decoded.id);
@@ -96,7 +95,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 	// 4) Check password changed or not
 	const isPasswordChangeAfter = user.isPasswordChangeAfter(decoded.iat);
-	console.log(isPasswordChangeAfter);
 	if (isPasswordChangeAfter)
 		throw new Error('Password is changed, login again', 401);
 
