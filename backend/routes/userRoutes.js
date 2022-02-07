@@ -1,26 +1,22 @@
-const express = require('express');
-const router = express.Router();
-const userController = require('../controllers/userController');
-const authController = require('../controllers/authController');
-
-router.route('/').get(userController.getAllUsers);
-router.post('/signup', authController.signup);
-router.post('/signin', authController.signin);
-
-// Sent email to user, with reset token
-router.post('/forgotPassword', authController.forgotPasword);
-router.post('/resetPassword/:token', authController.resetPassword);
+const express = require('express')
+const router = express.Router()
+const userController = require('../controllers/userController')
+const { authenticate, authorize } = require('../controllers/authController')
 
 router
-	.use(authController.protect)
-	.post('/changePassword', userController.updatePassword)
+	.route('/')
+	.get(authenticate, authorize('admin'), userController.getAllUsers)
+
+router
+	.use(authenticate)
+	.post('/updatepassword', userController.updatePassword)
 	.post('/updateme', userController.updateMe)
-	.delete('/deleteme', userController.deleteMe);
+	.delete('/deleteme', userController.deleteMe)
 
 router
-	.route('/:id')
+	.route('/:id', authenticate)
 	.get(userController.getUser)
 	.delete(userController.deleteUser)
-	.patch(userController.updateUser);
+	.patch(userController.updateUser)
 
-module.exports = router;
+module.exports = router

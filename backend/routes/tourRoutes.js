@@ -1,27 +1,27 @@
-const express = require('express');
-const router = express.Router();
-const tourController = require('../controllers/tourController');
-const tourMiddleware = require('../middlewares/tourMiddleware');
-const authController = require('../controllers/authController');
+const express = require('express')
+const router = express.Router()
+const tourController = require('../controllers/tourController')
+const tourMiddleware = require('../middlewares/tourMiddleware')
+const { authenticate, authorize } = require('../controllers/authController')
 
 router
 	.route('/top-5-cheap')
-	.get(tourMiddleware.aliasTopCheapTour, tourController.getAllTours);
+	.get(tourMiddleware.aliasTopCheapTour, tourController.getAllTours)
 
-router.get('/stats', tourController.getStats);
-router.get('/monthly-plan/:year', tourController.getMonthlyPlan);
+router.get('/stats', tourController.getStats)
+router.get('/monthly-plan/:year', tourController.getMonthlyPlan)
 
-router.get('/', authController.protect, tourController.getAllTours);
-router.post('/', tourController.createTour);
+router.get('/', authenticate, tourController.getAllTours)
+router.post('/', tourController.createTour)
 
 router
 	.route('/:id')
 	.get(tourController.getTour)
 	.delete(
-		authController.protect,
-		authController.restrictTo('admin', 'lead-guide'),
+		authenticate,
+		authorize('admin', 'lead-guide'),
 		tourController.deleteTour
 	)
-	.patch(tourController.updateTour);
+	.patch(tourController.updateTour)
 
-module.exports = router;
+module.exports = router
