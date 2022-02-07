@@ -44,11 +44,7 @@ exports.signin = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
 	// 1) Get JWT
-	const authStr = req.headers.authorization;
-	let token;
-	if (authStr && authStr.startsWith('Bearer')) {
-		token = authStr.split(' ')[1];
-	}
+	const token = req.cookies.jwt;
 	if (!token) throw new AppError('Please login', 401);
 
 	// 2) Verify JWT
