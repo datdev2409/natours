@@ -49,7 +49,24 @@ const userSchema = new mongoose.Schema({
 		type: Date
 	},
 	passwordResetToken: String,
-	passwordResetExpires: Date
+	passwordResetExpires: Date,
+	active: {
+		type: Boolean,
+		default: true,
+		select: false
+	},
+	loginAttempts: {
+		type: Number,
+		default: 10,
+		select: false
+	},
+	lockUntil: Date
+});
+
+// User Middleware
+userSchema.pre(/^find/, function (next) {
+	this.find({ active: true });
+	next();
 });
 
 userSchema.pre('save', async function (next) {
@@ -71,6 +88,7 @@ userSchema.pre('updateOne', async function (next) {
 	next();
 });
 
+// METHODS
 userSchema.methods.verifyPassword = async function (plainPassword, password) {
 	password = password || this.password;
 	return await bcrypt.compare(plainPassword, password);
@@ -89,6 +107,24 @@ userSchema.methods.createRandomResetToken = function () {
 		.digest('hex');
 
 	this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+};
+
+userSchema.methods.wrongPassword = async function () {
+	if (this.loginAttempts == 1) {
+		return await User.findByIdAndUpdate(this.id, {
+			lockUntil: Date.now() + 60 * 1000,
+			loginAttempts: 10
+		});
+	}
+	await User.findByIdAndUpdate(this.id, {
+		loginAttempts: this.loginAttempts - 1
+	});
+};
+
+userSchema.methods.rightPassword = async function () {
+	await User.findByIdAndUpdate(this.id, {
+		loginAttempts: 10
+	});
 };
 
 const User = mongoose.model('User', userSchema);

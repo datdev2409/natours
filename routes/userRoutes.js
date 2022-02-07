@@ -3,10 +3,9 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 
-router.route('/').get(authController.protect, userController.getAllUsers);
+router.route('/').get(userController.getAllUsers);
 router.post('/signup', authController.signup);
 router.post('/signin', authController.signin);
-router.post('/admin/signup', authController.adminSignup);
 
 // Sent email to user, with reset token
 router.post('/forgotPassword', authController.forgotPasword);

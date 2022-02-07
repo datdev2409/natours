@@ -5,75 +5,41 @@ const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
 const { promisify } = require('util');
 const sendEmail = require('../utils/email');
-
-function signJWT(data = {}) {
-	const privateKey = process.env.JWT_SECRET;
-	const expiresIn = process.env.JWT_EXPIRES_IN;
-	const token = jwt.sign(data, privateKey, { expiresIn });
-	return token;
-}
+const sendUserToken = require('../utils/sendUserToken');
+const filterObj = require('../utils/filterObj');
 
 exports.signup = catchAsync(async (req, res) => {
 	// If use all data to create user, everybody can register a role as admin
-	const data = req.body;
-	const newUser = await User.create({
-		name: data.name,
-		email: data.email,
-		password: data.password,
-		passwordConfirm: data.passwordConfirm,
-		passwordChangedAt: data.passwordChangedAt
-	});
-
-	// Generate JWT
-	const token = signJWT({ id: newUser._id });
-
-	// Response data with JWT to client
-	const jsonRes = new AppResponse('success', {
-		jwt: token,
-		user: newUser
-	}).toJson();
-	res.status(200).json(jsonRes);
+	const data = filterObj(req.body, [
+		'name',
+		'email',
+		'password',
+		'passwordConfirm'
+	]);
+	const newUser = await User.create(data);
+	sendUserToken(newUser, res, 200);
 });
 
-exports.adminSignup = catchAsync(async (req, res) => {
-	// If use all data to create user, everybody can register a role as admin
-	const data = req.body;
-	const newUser = await User.create({
-		name: data.name,
-		email: data.email,
-		password: data.password,
-		passwordConfirm: data.passwordConfirm
-	});
-
-	// Generate JWT
-	const token = signJWT({ id: newUser._id });
-
-	// Response data with JWT to client
-	const jsonRes = new AppResponse('success', {
-		jwt: token,
-		user: newUser
-	}).toJson();
-	res.status(200).json(jsonRes);
-});
-
-exports.signin = catchAsync(async (req, res) => {
+exports.signin = catchAsync(async (req, res, next) => {
 	const { email, password } = req.body;
 	if (!email || !password)
 		throw new AppError('Please enter email or password', 404);
 
 	// password (select: false) can not be access by default
-	const user = await User.findOne({ email }).select('+password');
+	const user = await User.findOne({ email }).select('+password +loginAttempts');
 	if (!user) throw new AppError('No user in DB', 404);
+	if (user.lockUntil && Date.now() < user.lockUntil) {
+		throw new AppError('Your account is locked', 403);
+	}
 
 	const match = await user.verifyPassword(password, user.password);
+	if (!match) {
+		user.wrongPassword();
+		throw new AppError(`${user.loginAttempts - 1}`, 403);
+	}
 
-	if (match) {
-		const token = signJWT({ id: user._id });
-		const jsonRes = new AppResponse('success', {
-			jwt: token
-		}).toJson();
-		res.status(200).json(jsonRes);
-	} else throw new AppError("Password doesn't not match", 404);
+	user.rightPassword();
+	sendUserToken(user, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -158,10 +124,5 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 	user.passwordResetExpires = undefined;
 	await user.save();
 
-	const jwToken = signJWT({ id: user._id });
-
-	res.status(200).json({
-		status: 'success',
-		data: { jwt: jwToken }
-	});
+	sendUserToken(user, res);
 });

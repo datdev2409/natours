@@ -2,15 +2,8 @@ const User = require('../models/userModel');
 const AppResponse = require('../utils/appResponse');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const createUserToken = require('../utils/createUserToken');
-
-function filterObj(obj, allowedFields) {
-	let newObj = {};
-	Object.keys(obj).forEach(key => {
-		if (allowedFields.includes(key)) newObj[key] = obj[key];
-	});
-	return newObj;
-}
+const sendUserToken = require('../utils/sendUserToken');
+const filterObj = require('../utils/filterObj');
 
 exports.getAllUsers = catchAsync(async (req, res) => {
 	const users = await User.find({});
@@ -64,12 +57,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 exports.updateMe = catchAsync(async (req, res, next) => {
 	if (req.body.password || req.body.confirmPassword) {
-		return next(
-			new AppError(
-				'This route is not used for password update, try /changePassword instead',
-				400
-			)
-		);
+		throw AppError('This route is not used for password update', 400);
 	}
 
 	const filteredObj = filterObj(req.body, ['name', 'email']);
@@ -83,16 +71,10 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-	const user = await User.findById(req.user.id).select('+password');
-
-	const password = req.body.password;
-	const match = await user.verifyPassword(password, user.password);
-	if (!match) {
-		return next(new AppError("Password doesn't not match", 403));
-	}
-	await User.findByIdAndRemove(user.id);
+	await User.findByIdAndUpdate(req.user.id, { active: false });
 
 	res.status(204).json({
-		status: 'success'
+		status: 'success',
+		data: null
 	});
 });
