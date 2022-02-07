@@ -2,12 +2,10 @@
 	"name": "natours",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "./backend/server.js",
 	"scripts": {
-		"start": "nodemon index.js",
-		"start:prod": "NODE_ENV=production nodemon index.js",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"debug": "ndb index.js"
+		"start": "nodemon ./backend/server.js",
+		"start:prod": "NODE_ENV=production nodemon ./backend/server.js"
 	},
 	"repository": {
 		"type": "git",

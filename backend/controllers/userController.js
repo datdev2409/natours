@@ -20,7 +20,7 @@ exports.getUser = catchAsync(async (req, res) => {
 
 exports.deleteUser = catchAsync(async (req, res) => {
 	const id = req.params.id;
-	const user = await User.findByIdAndDelete(id);
+	await User.findByIdAndDelete(id);
 	const jsonRes = new AppResponse('success', { user: null }).toJson();
 	res.status(204).json(jsonRes);
 });
