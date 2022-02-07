@@ -5,6 +5,12 @@ const cookieParser = require('cookie-parser');
 const errorHanlder = require('./middlewares/errorHandler');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+
 require('dotenv').config();
 
 // handle uncaught exception
@@ -25,10 +31,27 @@ async function connectDB() {
 }
 
 // Middleware
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+	message: 'Too many request from this IP, please try in 15 minutes'
+});
+
+app.use(helmet());
+app.use(limiter);
 app.use(morgan('dev'));
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(mongoSanitize());
+app.use(xss());
+app.use(
+	hpp({
+		whitelist: ['duration', 'difficulty', 'price']
+	})
+);
 
 // Routes
 app.use('/api/v1/tours', tourRouter);

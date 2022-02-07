@@ -24,6 +24,10 @@ class APIFeatures {
 
 	sort() {
 		if (this.queryObj.sort) {
+			if (Array.isArray(this.queryObj.sort)) {
+				this.queryObj.sort = this.queryObj.sort.join(',');
+			}
+			console.log(this.queryObj.sort);
 			let sortQuery = this.queryObj.sort.split(',').join(' ');
 			this.query.sort(sortQuery);
 		}
