@@ -22,8 +22,8 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 })
 
 exports.getTour = catchAsync(async (req, res, next) => {
-	const id = req.params.id
-	const tour = await Tour.findById(id).populate('reviews')
+	const tourId = req.params.tourId
+	const tour = await Tour.findById(tourId).populate('reviews')
 	if (!tour) throw new AppError('No tour found with that id', 404)
 	res.status(200).json(createResponse('success', { tour }, ''))
 })
@@ -34,15 +34,15 @@ exports.createTour = catchAsync(async (req, res, next) => {
 })
 
 exports.updateTour = catchAsync(async (req, res, next) => {
-	const id = req.params.id
-	const updatedTour = await Tour.findByIdAndUpdate(id, req.body)
+	const tourId = req.params.tourId
+	const updatedTour = await Tour.findByIdAndUpdate(tourId, req.body)
 	if (!updatedTour) throw new AppError('No tour found with that id', 404)
 	res.status(200).json(createResponse('success', { tour: updatedTour }))
 })
 
 exports.deleteTour = catchAsync(async (req, res, next) => {
-	const id = req.params.id
-	const deletedTour = await Tour.findByIdAndDelete(id)
+	const tourId = req.params.tourId
+	const deletedTour = await Tour.findByIdAndDelete(tourId)
 	if (!deletedTour) throw new AppError('No tour found with that id', 404)
 	res.status(204).json(createResponse('success', null))
 })

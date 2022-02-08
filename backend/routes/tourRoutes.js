@@ -3,6 +3,7 @@ const router = express.Router()
 const tourController = require('../controllers/tourController')
 const tourMiddleware = require('../middlewares/tourMiddleware')
 const { authenticate, authorize } = require('../controllers/authController')
+const reviewRouter = require('../routes/reviewRoutes')
 
 router
 	.route('/top-5-cheap')
@@ -11,17 +12,18 @@ router
 router.get('/stats', tourController.getStats)
 router.get('/monthly-plan/:year', tourController.getMonthlyPlan)
 
-router.get('/', authenticate, tourController.getAllTours)
-router.post('/', tourController.createTour)
+router
+	.route('/')
+	.get(tourController.getAllTours)
+	.post(tourController.createTour)
+
+router.use('/:tourId/reviews', reviewRouter)
 
 router
-	.route('/:id')
+	.route('/:tourId')
 	.get(tourController.getTour)
-	.delete(
-		authenticate,
-		authorize('admin', 'lead-guide'),
-		tourController.deleteTour
-	)
+	.delete(tourController.deleteTour)
 	.patch(tourController.updateTour)
 
+// POST /tours/:tourId/reviews/
 module.exports = router

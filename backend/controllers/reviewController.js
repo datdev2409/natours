@@ -8,8 +8,11 @@ const asyncHandler = require('express-async-handler')
 // @access	Public
 const createReview = asyncHandler(async (req, res, next) => {
 	const userId = req.user.id
+	const tourId = req.body.tour ? req.body.tour : req.params.tourId
 	const data = filterObj(req.body, ['review', 'rating', 'tour'])
-	const review = await Review.create(Object.assign(data, { author: userId }))
+	const review = await Review.create(
+		Object.assign(data, { author: userId, tour: tourId })
+	)
 	res.status(200).json({ status: 'success', review: review })
 })
 
@@ -17,7 +20,13 @@ const createReview = asyncHandler(async (req, res, next) => {
 // @route		GET /reviews/
 // @access	Private (admin)
 const getAllReviews = asyncHandler(async (req, res, next) => {
-	const reviews = await Review.find({})
+	const tourId = req.params.tourId
+	const userId = req.params.userId
+
+	let filterObj = tourId ? { tour: tourId } : {}
+	filterObj = userId ? Object.assign(filterObj, { author: userId }) : filterObj
+
+	const reviews = await Review.find(filterObj)
 	res.status(200).json({ status: 'success', review: reviews })
 })
 
