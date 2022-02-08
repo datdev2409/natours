@@ -10,7 +10,7 @@ const asyncHandler = require('express-async-handler')
 // @desc		Login
 // @route		POST /auth/login
 // @access	Public
-const login = asyncHandler(async (req, res) => {
+const login = asyncHandler(async (req, res, next) => {
 	const { email, password } = req.body
 	if (!email || !password)
 		throw new AppError('Please enter email or password', 404)
@@ -35,7 +35,7 @@ const login = asyncHandler(async (req, res) => {
 // @desc		Register
 // @route		POST /auth/register
 // @access	Public
-const register = asyncHandler(async (req, res) => {
+const register = asyncHandler(async (req, res, next) => {
 	const data = filterObj(req.body, [
 		'name',
 		'email',
@@ -83,7 +83,7 @@ const authorize = function (...roles) {
 // @desc		Forgot password
 // @route		PATCH /auth/password_forgot
 // @access	Public
-const forgotPassword = asyncHandler(async (req, res) => {
+const forgotPassword = asyncHandler(async (req, res, next) => {
 	// 1) Get user by email
 	const user = await User.findOne({ email: req.body.email })
 	if (!user) next(new AppError('No user with that email address', 404))
@@ -117,7 +117,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 // @desc		Reset password
 // @route		POST /auth/password_reset/:token
 // @access	Private
-const resetPassword = asyncHandler(async (req, res) => {
+const resetPassword = asyncHandler(async (req, res, next) => {
 	const token = req.params.token
 
 	// Get user
