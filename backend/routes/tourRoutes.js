@@ -9,8 +9,8 @@ router
 	.route('/top-5-cheap')
 	.get(tourMiddleware.aliasTopCheapTour, tourController.getAllTours)
 
-router.get('/stats', tourController.getStats)
-router.get('/monthly-plan/:year', tourController.getMonthlyPlan)
+// router.get('/stats', tourController.getStats)
+// router.get('/monthly-plan/:year', tourController.getMonthlyPlan)
 
 router
 	.route('/')
@@ -20,7 +20,7 @@ router
 router.use('/:tourId/reviews', reviewRouter)
 
 router
-	.route('/:tourId')
+	.route('/:id')
 	.get(tourController.getTour)
 	.delete(tourController.deleteTour)
 	.patch(tourController.updateTour)

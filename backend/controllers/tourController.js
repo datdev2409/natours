@@ -1,51 +1,17 @@
 const Tour = require('../models/tourModel')
 const APIFeatures = require('../utils/apiFeatures')
-const AppError = require('../utils/appError')
+const factory = require('./factoryController')
 const catchAsync = require('../utils/catchAsync')
 
-function createResponse(status, data, message = '') {
-	return { status, data, message }
+class TourController {
+	createTour = factory.createOne(Tour)
+	getTour = factory.getOne(Tour, 'reviews')
+	getAllTours = factory.getAll(Tour)
+	updateTour = factory.updateOne(Tour)
+	deleteTour = factory.deleteOne(Tour)
 }
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
-	const options = ['all']
-	const features = new APIFeatures(Tour.find(), req.query, options)
-	const tours = await features.query
-	const responseData = {
-		status: 'success',
-		data: {
-			numTours: tours.length,
-			tour: tours
-		}
-	}
-	res.status(200).json(responseData)
-})
-
-exports.getTour = catchAsync(async (req, res, next) => {
-	const tourId = req.params.tourId
-	const tour = await Tour.findById(tourId).populate('reviews')
-	if (!tour) throw new AppError('No tour found with that id', 404)
-	res.status(200).json(createResponse('success', { tour }, ''))
-})
-
-exports.createTour = catchAsync(async (req, res, next) => {
-	const newTour = await Tour.create(req.body)
-	res.status(200).json(createResponse('success', { tour: newTour }, ''))
-})
-
-exports.updateTour = catchAsync(async (req, res, next) => {
-	const tourId = req.params.tourId
-	const updatedTour = await Tour.findByIdAndUpdate(tourId, req.body)
-	if (!updatedTour) throw new AppError('No tour found with that id', 404)
-	res.status(200).json(createResponse('success', { tour: updatedTour }))
-})
-
-exports.deleteTour = catchAsync(async (req, res, next) => {
-	const tourId = req.params.tourId
-	const deletedTour = await Tour.findByIdAndDelete(tourId)
-	if (!deletedTour) throw new AppError('No tour found with that id', 404)
-	res.status(204).json(createResponse('success', null))
-})
+module.exports = new TourController()
 
 exports.getStats = catchAsync(async (req, res, next) => {
 	const stats = await Tour.aggregate([

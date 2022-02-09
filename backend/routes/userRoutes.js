@@ -10,11 +10,11 @@ router
 
 router.use('/:userId/reviews', reviewRouter)
 
-router
-	.use(authenticate)
-	.post('/updatepassword', userController.updatePassword)
-	.post('/updateme', userController.updateMe)
-	.delete('/deleteme', userController.deleteMe)
+// router
+// 	.use(authenticate)
+// 	.post('/updatepassword', userController.updatePassword)
+// 	.post('/updateme', userController.updateMe)
+// 	.delete('/deleteme', userController.deleteMe)
 
 router
 	.route('/:id', authenticate)

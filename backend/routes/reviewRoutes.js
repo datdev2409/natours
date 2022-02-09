@@ -6,7 +6,11 @@ const { authenticate, authorize } = require('../controllers/authController')
 router
 	.route('/')
 	.get(authenticate, reviewController.getAllReviews)
-	.post(authenticate, reviewController.createReview)
+	.post(
+		authenticate,
+		reviewController.handleInput,
+		reviewController.createReview
+	)
 
 router
 	.route('/:id')
