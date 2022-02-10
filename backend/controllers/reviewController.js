@@ -6,7 +6,7 @@ class ReviewController {
 	handleInput = asyncHandler(async (req, res, next) => {
 		const userId = req.user.id
 		const tourId = req.body.tour ? req.body.tour : req.params.tourId
-		req.body = Object.assign(req.body, { author: userId, tour: tourId })
+		req.body = Object.assign(req.body, { user: userId, tour: tourId })
 		next()
 	})
 

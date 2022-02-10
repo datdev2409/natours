@@ -4,22 +4,20 @@ const userController = require('../controllers/userController')
 const { authenticate, authorize } = require('../controllers/authController')
 const reviewRouter = require('./reviewRoutes')
 
-router
-	.route('/')
-	.get(authenticate, authorize('admin'), userController.getAllUsers)
-
 router.use('/:userId/reviews', reviewRouter)
-
-// router
-// 	.use(authenticate)
-// 	.post('/updatepassword', userController.updatePassword)
-// 	.post('/updateme', userController.updateMe)
-// 	.delete('/deleteme', userController.deleteMe)
-
+router.use(authenticate)
+router.get('/', authorize('admin'), userController.getAllUsers)
 router
-	.route('/:id', authenticate)
+	.route('/:id')
 	.get(userController.getUser)
 	.delete(userController.deleteUser)
 	.patch(userController.updateUser)
+
+router.use(userController.getMe)
+router
+	.route('/me')
+	.get(userController.getUser)
+	.patch(userController.updateUser)
+	.delete(userController.deleteUser)
 
 module.exports = router

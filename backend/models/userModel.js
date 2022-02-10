@@ -1,8 +1,8 @@
 // name, email(unique), password, password_confirmation
-const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcrypt');
-const crypto = require('crypto');
+const mongoose = require('mongoose')
+const validator = require('validator')
+const bcrypt = require('bcrypt')
+const crypto = require('crypto')
 
 const userSchema = new mongoose.Schema({
 	name: {
@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
 		validate: {
 			// this only defined when use save and create (not update)
 			validator: function (confirm) {
-				return confirm === this.password;
+				return confirm === this.password
 			},
 			message: 'The password confirmation does not match'
 		}
@@ -61,71 +61,87 @@ const userSchema = new mongoose.Schema({
 		select: false
 	},
 	lockUntil: Date
-});
+})
+
+userSchema.set('toJSON', { virtuals: true })
+userSchema.set('toObject', { virtuals: true })
+// Virtual properties
+userSchema.virtual('reviews', {
+	ref: 'Review',
+	foreignField: 'user',
+	localField: '_id'
+})
 
 // User Middleware
 userSchema.pre(/^find/, function (next) {
-	this.find({ active: true });
-	next();
-});
+	this.find({ active: true })
+	next()
+})
 
 userSchema.pre('save', async function (next) {
 	// Only encrypt password, if password is actually modified
 	if (this.isModified('password')) {
-		this.password = await bcrypt.hash(this.password, 12);
-		this.passwordConfirm = undefined;
-		this.passwordChangedAt = Date.now() - 1000;
+		this.password = await bcrypt.hash(this.password, 12)
+		this.passwordConfirm = undefined
+		this.passwordChangedAt = Date.now() - 1000
 	}
-	next();
-});
+	next()
+})
+
+userSchema.pre('insertMany', async function (next, docs) {
+	docs = docs.map(user => {
+		user.passwordConfirm = undefined
+		return user
+	})
+})
 
 userSchema.pre('updateOne', async function (next) {
 	// This is query object ( not document object )
-	const password = this.getUpdate()['password'];
+	const password = this.getUpdate()['password']
 	if (password) {
-		this.set({ passwordChangedAt: new Date(), password: 'hello' });
+		this.set({ passwordChangedAt: new Date(), password: 'hello' })
 	}
-	next();
-});
+	next()
+})
 
 // METHODS
 userSchema.methods.verifyPassword = async function (plainPassword, password) {
-	password = password || this.password;
-	return await bcrypt.compare(plainPassword, password);
-};
+	password = password || this.password
+	return await bcrypt.compare(plainPassword, password)
+}
 
 userSchema.methods.isPasswordChangeAfter = function (JWTTimestamp) {
-	if (!this.passwordChangedAt) return false;
-	return Date.parse(this.passwordChangedAt) / 1000 >= JWTTimestamp;
-};
+	if (!this.passwordChangedAt) return false
+	return Date.parse(this.passwordChangedAt) / 1000 >= JWTTimestamp
+}
 
 userSchema.methods.createRandomResetToken = function () {
-	const resetToken = crypto.randomBytes(32).toString('hex');
+	const resetToken = crypto.randomBytes(32).toString('hex')
 	this.passwordResetToken = crypto
 		.createHash('sha256')
 		.update(resetToken)
-		.digest('hex');
+		.digest('hex')
 
-	this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-};
+	this.passwordResetExpires = Date.now() + 10 * 60 * 1000
+}
 
 userSchema.methods.wrongPassword = async function () {
 	if (this.loginAttempts == 1) {
 		return await User.findByIdAndUpdate(this.id, {
 			lockUntil: Date.now() + 60 * 1000,
 			loginAttempts: 10
-		});
+		})
 	}
 	await User.findByIdAndUpdate(this.id, {
 		loginAttempts: this.loginAttempts - 1
-	});
-};
+	})
+}
 
 userSchema.methods.rightPassword = async function () {
 	await User.findByIdAndUpdate(this.id, {
 		loginAttempts: 10
-	});
-};
+	})
+}
 
-const User = mongoose.model('User', userSchema);
-module.exports = User;
+const User = mongoose.model('User', userSchema)
+module.exports = User

@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync')
 
 class TourController {
 	createTour = factory.createOne(Tour)
-	getTour = factory.getOne(Tour, 'reviews')
+	getTour = factory.getOne(Tour)
 	getAllTours = factory.getAll(Tour)
 	updateTour = factory.updateOne(Tour)
 	deleteTour = factory.deleteOne(Tour)

@@ -43,8 +43,11 @@ class Factory {
 
 	getAll = Model => {
 		return asyncHandler(async (req, res, next) => {
+			// Hack for get review in tour
+			let queryObj = {}
+			if (req.body.tour) queryObj = { tour: req.body.tour }
 			const options = ['all']
-			const features = new APIFeatures(Model.find(), req.query, options)
+			const features = new APIFeatures(Model.find(queryObj), req.query, options)
 			const docs = await features.query
 			res.status(200).json({
 				status: 'success',

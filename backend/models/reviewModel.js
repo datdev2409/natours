@@ -20,7 +20,7 @@ const reviewSchema = mongoose.Schema({
 		ref: 'Tour',
 		requrie: [true, 'Review must belong to a tour']
 	},
-	author: {
+	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
 		requrie: [true, 'Review must belong to a user']
@@ -31,12 +31,12 @@ reviewSchema.set('toJson', { virtuals: true })
 reviewSchema.set('toObject', { virtuals: true })
 
 // QUERY MIDDLEWARE
-reviewSchema.pre(/^find/, function () {
-	this.populate({
-		path: 'author',
-		select: 'name photo'
-	})
-})
+// reviewSchema.pre(/^find/, function () {
+// 	this.populate({
+// 		path: 'user',
+// 		select: 'name photo'
+// 	})
+// })
 
 const Review = mongoose.model('Review', reviewSchema)
 module.exports = Review
