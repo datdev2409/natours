@@ -25,5 +25,7 @@ router
 	.delete(tourController.deleteTour)
 	.patch(tourController.updateTour)
 
+router.get('/:id/average-rating', tourController.getAverageRating)
+
 // POST /tours/:tourId/reviews/
 module.exports = router

@@ -1,14 +1,23 @@
 const Tour = require('../models/tourModel')
 const APIFeatures = require('../utils/apiFeatures')
 const factory = require('./factoryController')
+const asyncHandler = require('express-async-handler')
 const catchAsync = require('../utils/catchAsync')
 
 class TourController {
 	createTour = factory.createOne(Tour)
-	getTour = factory.getOne(Tour)
+	getTour = factory.getOne(Tour, 'reviews')
 	getAllTours = factory.getAll(Tour)
 	updateTour = factory.updateOne(Tour)
 	deleteTour = factory.deleteOne(Tour)
+
+	getAverageRating = asyncHandler(async (req, res, next) => {
+		const tour = await Tour.findById(req.params.id).populate('reviews')
+		const totalRating = tour.reviews.reduce((total, { rating }) => {
+			return total + rating
+		}, 0)
+		console.log(totalRating)
+	})
 }
 
 module.exports = new TourController()

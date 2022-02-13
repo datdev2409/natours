@@ -1,8 +1,5 @@
 const mongoose = require('mongoose')
 const slugify = require('slugify')
-// const Review = require('./reviewModel')
-// const User = require('./userModel')
-// const validator = require('validator');
 
 const tourSchema = new mongoose.Schema({
 	name: {
@@ -35,7 +32,8 @@ const tourSchema = new mongoose.Schema({
 		type: Number,
 		default: 4.5,
 		min: [1, 'Rating must be above 1.0'],
-		max: [5, 'Rating must be below 5.0']
+		max: [5, 'Rating must be below 5.0'],
+		set: val => val.toFixed(2)
 	},
 	ratingsQuantity: {
 		type: Number,
@@ -107,6 +105,10 @@ const tourSchema = new mongoose.Schema({
 
 tourSchema.set('toJSON', { virtuals: true })
 tourSchema.set('toObject', { virtuals: true })
+
+// CREATE INDEXES IN MONGODB
+tourSchema.index({ price: 1, ratingsAverage: -1 })
+tourSchema.index({ slug: 1 })
 
 // VIRUTAL POPULATE
 tourSchema.virtual('reviews', {

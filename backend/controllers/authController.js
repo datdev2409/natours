@@ -104,9 +104,6 @@ class AuthController {
 		}
 	})
 
-	// @desc		Reset password
-	// @route		POST /auth/password_reset/:token
-	// @access	Private
 	resetPassword = asyncHandler(async (req, res, next) => {
 		const token = req.params.token
 
@@ -128,4 +125,4 @@ class AuthController {
 	})
 }
 
-module.exports = AuthController
+module.exports = new AuthController()
