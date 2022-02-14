@@ -81,7 +81,8 @@ const tourSchema = new mongoose.Schema({
 		type: {
 			type: String,
 			default: 'Point',
-			enum: ['Point']
+			enum: ['Point'],
+			require: true
 		},
 		coordinates: [Number],
 		description: String,
@@ -107,8 +108,9 @@ tourSchema.set('toJSON', { virtuals: true })
 tourSchema.set('toObject', { virtuals: true })
 
 // CREATE INDEXES IN MONGODB
-tourSchema.index({ price: 1, ratingsAverage: -1 })
 tourSchema.index({ slug: 1 })
+tourSchema.index({ price: 1, ratingsAverage: -1 })
+tourSchema.index({ startLocation: '2dsphere' })
 
 // VIRUTAL POPULATE
 tourSchema.virtual('reviews', {
@@ -131,12 +133,9 @@ tourSchema.pre(/^find/, function (next) {
 })
 
 // AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function (next) {
-	this.pipeline().unshift({ $match: { secretTour: { $ne: true } } })
-
-	console.log(this.pipeline())
-	next()
-})
+// tourSchema.post('aggregate', function (next) {
+// 	this.pipeline().unshift({ $match: { secretTour: { $ne: true } } })
+// })
 
 const Tour = mongoose.model('Tour', tourSchema)
 module.exports = Tour

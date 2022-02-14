@@ -19,13 +19,14 @@ router
 
 router.use('/:tourId/reviews', reviewRouter)
 
+router.get('/near', tourController.getNearLocations)
+router.route('/distances/:latlng/:unit').get(tourController.getDistances)
+
 router
 	.route('/:id')
 	.get(tourController.getTour)
 	.delete(tourController.deleteTour)
 	.patch(tourController.updateTour)
-
-router.get('/:id/average-rating', tourController.getAverageRating)
 
 // POST /tours/:tourId/reviews/
 module.exports = router
