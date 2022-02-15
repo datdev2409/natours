@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv').config()
 const cookieParser = require('cookie-parser')
 const errorHanlder = require('./middlewares/errorHandler')
+const DB = require('./config/db')
 
 // Security middleware
 const hpp = require('hpp')
@@ -25,24 +26,14 @@ process.on('uncaughtException', err => {
 })
 
 const app = express()
-
-// Connect DB
-connectDB()
-
-async function connectDB() {
-	let DB = process.env.DB || 'mongodb://localhost:27017/test'
-	DB = DB.replace('<USERNAME>', process.env.DB_USERNAME)
-	DB = DB.replace('<PASSWORD>', process.env.DB_PASSWORD)
-	await mongoose.connect(DB)
-	console.log('Database connected!!')
-}
+DB.connect()
 
 // Middleware
 const limiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+	windowMs: 15 * 60 * 1000,
+	max: 100, 
+	standardHeaders: true, 
+	legacyHeaders: false, 
 	message: 'Too many request from this IP, please try in 15 minutes'
 })
 

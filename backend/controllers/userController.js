@@ -1,10 +1,10 @@
 const User = require('../models/userModel')
 const factory = require('../controllers/factoryController')
-const asyncHandler = require('express-async-handler')
 
 class UserController {
 	getMe = (req, res, next) => {
 		req.params.id = req.user.id
+		console.log('User id: ', req.user.id);
 		next()
 	}
 

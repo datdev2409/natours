@@ -33,18 +33,6 @@ const userSchema = new mongoose.Schema({
 		maxlength: [25, 'Password must have at most 25 characters'],
 		select: false
 	},
-	passwordConfirm: {
-		type: String,
-		trim: true,
-		required: true,
-		validate: {
-			// this only defined when use save and create (not update)
-			validator: function (confirm) {
-				return confirm === this.password
-			},
-			message: 'The password confirmation does not match'
-		}
-	},
 	passwordChangedAt: {
 		type: Date
 	},
@@ -65,6 +53,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.set('toJSON', { virtuals: true })
 userSchema.set('toObject', { virtuals: true })
+
 // Virtual properties
 userSchema.virtual('reviews', {
 	ref: 'Review',
@@ -74,7 +63,9 @@ userSchema.virtual('reviews', {
 
 // User Middleware
 userSchema.pre(/^find/, function (next) {
-	this.find({ active: true })
+	this
+		.find({ active: true })
+		.select('-passwordChangedAt -__v -id')
 	next()
 })
 
@@ -82,17 +73,9 @@ userSchema.pre('save', async function (next) {
 	// Only encrypt password, if password is actually modified
 	if (this.isModified('password')) {
 		this.password = await bcrypt.hash(this.password, 12)
-		this.passwordConfirm = undefined
 		this.passwordChangedAt = Date.now() - 1000
 	}
 	next()
-})
-
-userSchema.pre('insertMany', async function (next, docs) {
-	docs = docs.map(user => {
-		user.passwordConfirm = undefined
-		return user
-	})
 })
 
 userSchema.pre('updateOne', async function (next) {
