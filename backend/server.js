@@ -5,6 +5,7 @@ const dotenv = require('dotenv').config()
 const cookieParser = require('cookie-parser')
 const errorHanlder = require('./middlewares/errorHandler')
 const DB = require('./config/db')
+const path = require('path')
 
 // Security middleware
 const hpp = require('hpp')
@@ -26,6 +27,15 @@ process.on('uncaughtException', err => {
 })
 
 const app = express()
+
+// Set view engine
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, 'views'))
+
+// Serving static file
+app.use(express.static(path.join(__dirname, 'public')))
+
+// Database connect
 DB.connect()
 
 // Middleware
@@ -52,6 +62,14 @@ app.use(
 )
 
 // Routes
+app.get('/', (req, res) => {
+	res.status(200).render('base', {
+		tour: 'The Forest Striker',
+		user: 'Cong Dat'
+	})
+})
+
+
 app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/auth', authRouter)
