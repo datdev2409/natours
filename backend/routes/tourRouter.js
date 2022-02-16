@@ -3,7 +3,7 @@ const router = express.Router()
 const tourController = require('../controllers/tourController')
 const tourMiddleware = require('../middlewares/tourMiddleware')
 const { authenticate, authorize } = require('../controllers/authController')
-const reviewRouter = require('../routes/reviewRoutes')
+const reviewRouter = require('../routes/reviewRouter')
 
 router
 	.route('/top-5-cheap')

@@ -15,10 +15,11 @@ const rateLimit = require('express-rate-limit')
 const mongoSanitize = require('express-mongo-sanitize')
 
 // Router
-const tourRouter = require('./routes/tourRoutes')
-const userRouter = require('./routes/userRoutes')
-const authRouter = require('./routes/authRoutes')
-const reviewRouter = require('./routes/reviewRoutes')
+const tourRouter = require('./routes/tourRouter')
+const userRouter = require('./routes/userRouter')
+const authRouter = require('./routes/authRouter')
+const reviewRouter = require('./routes/reviewRouter')
+const viewRouter = require('./routes/viewRouter')
 
 // handle uncaught exception
 process.on('uncaughtException', err => {
@@ -61,19 +62,12 @@ app.use(
 	})
 )
 
-// Routes
-app.get('/', (req, res) => {
-	res.status(200).render('base', {
-		tour: 'The Forest Striker',
-		user: 'Cong Dat'
-	})
-})
-
-
+app.use('/', viewRouter)
 app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/reviews', reviewRouter)
+
 // unhandeled routes
 app.all('*', (req, res) => {
 	res.status(404).json({
