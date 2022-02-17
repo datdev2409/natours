@@ -78,15 +78,6 @@ userSchema.pre('save', async function (next) {
 	next()
 })
 
-userSchema.pre('updateOne', async function (next) {
-	// This is query object ( not document object )
-	const password = this.getUpdate()['password']
-	if (password) {
-		this.set({ passwordChangedAt: new Date(), password: 'hello' })
-	}
-	next()
-})
-
 // METHODS
 userSchema.methods.verifyPassword = async function (plainPassword, password) {
 	password = password || this.password

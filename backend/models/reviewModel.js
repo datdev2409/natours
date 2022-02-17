@@ -51,6 +51,12 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
 }
 
 // QUERY MIDDLEWARE
+reviewSchema.pre(/^find/, function (next) {
+	this.find({ secretTour: { $ne: true } })
+	this.populate({ path: 'user', select: 'name email photo role' })
+	next()
+})
+
 reviewSchema.pre(/^findOneAnd/, async function () {
 	const review = await this.clone().findOne()
 	this.tourId = review.tour

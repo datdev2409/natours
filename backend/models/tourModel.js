@@ -131,14 +131,9 @@ tourSchema.pre('save', function (next) {
 // QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
 	this.find({ secretTour: { $ne: true } })
-	this.populate({ path: 'guides', select: 'name email' })
+	this.populate({ path: 'guides', select: 'name email photo role' })
 	next()
 })
-
-// AGGREGATION MIDDLEWARE
-// tourSchema.post('aggregate', function (next) {
-// 	this.pipeline().unshift({ $match: { secretTour: { $ne: true } } })
-// })
 
 const Tour = mongoose.model('Tour', tourSchema)
 module.exports = Tour

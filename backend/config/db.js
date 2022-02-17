@@ -6,6 +6,7 @@ async function connect() {
 	DB = DB.replace('<USERNAME>', process.env.DB_USERNAME)
 	DB = DB.replace('<PASSWORD>', process.env.DB_PASSWORD)
 	await mongoose.connect(DB)
+	console.log(DB);
 	console.log('Database connected!!')
 }
 
