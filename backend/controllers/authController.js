@@ -33,11 +33,18 @@ class AuthController {
 
 		user.rightPassword()
 
+		const token = generateToken({id: user.id})
+
+		res.cookie('token', token, {
+			expires: new Date(Date.now() + 360000),
+			httpOnly: true,
+		})
+
 		res.status(200).json({
 			email: user.email,
 			username: user.name,
 			role: user.role,
-			token: generateToken({id: user._id}),
+			token,
 		})
 	})
 
@@ -74,31 +81,30 @@ class AuthController {
 	authenticate = asyncHandler(async (req, res, next) => {
 		let token
 		const authHeader = req.headers['authorization']
-
+		
 		if (authHeader && authHeader.startsWith('Bearer ')) {
-			// Get token from header
 			token = authHeader.split(' ')[1]
-
-			// Verify user
-			const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-			// Check user exsits
-			const user = await User.findById(decoded.id).select('-password')
-			if (!user) {
-				throw new AppError('Token belongs to user no longer exists')
-			}
-
-			// Check user changed password after jwt generated
-			const isValid = user.isPasswordChangeAfter(decoded.iat)
-			if (isValid) {
-				throw new AppError('Password is changed, login again', 401)
-			}
-
-			req.user = user
-			next()
+		} else if (req.cookies.token) {
+			token = req.cookies.token
 		} else {
 			throw new AppError('Not authorized, no token')
 		}
+
+		const decoded = jwt.verify(token, process.env.JWT_SECRET)
+		// Check user exsits
+		const user = await User.findById(decoded.id).select('-password')
+		if (!user) {
+			throw new AppError('Token belongs to user no longer exists')
+		}
+
+		// Check user changed password after jwt generated
+		const isValid = user.isPasswordChangeAfter(decoded.iat)
+		if (isValid) {
+			throw new AppError('Password is changed, login again', 401)
+		}
+
+		req.user = user
+		next()
 	})
 
 	authorize = function (...roles) {
@@ -167,6 +173,26 @@ class AuthController {
 			role: user.role,
 			token: generateToken({id: user.id}),
 		})
+	})
+
+	isLoggedIn = asyncHandler(async (req, res, next) => {
+		if (req.cookies.token) {
+			const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET)
+
+			const user = await User.findById(decoded.id).select('-password')
+			if (!user) {
+				return next()
+			}
+
+			const isValid = user.isPasswordChangeAfter(decoded.iat)
+			if (isValid) {
+				return next()
+			}
+
+			res.locals.user = user
+		}
+
+		next()
 	})
 }
 

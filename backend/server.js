@@ -9,6 +9,7 @@ const path = require('path')
 
 // Security middleware
 const hpp = require('hpp')
+const cors = require('cors')
 const xss = require('xss-clean')
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
@@ -48,7 +49,6 @@ const limiter = rateLimit({
 	message: 'Too many request from this IP, please try in 15 minutes'
 })
 
-app.use(helmet())
 app.use(limiter)
 app.use(morgan('dev'))
 app.use(express.json({ limit: '10kb' }))
@@ -56,11 +56,17 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(mongoSanitize())
 app.use(xss())
-app.use(
-	hpp({
-		whitelist: ['duration', 'difficulty', 'price']
-	})
-)
+app.use(cors())
+app.use(helmet({
+	crossOriginResourcePolicy: false,
+	crossOriginResourcePolicy: {
+		policy: 'cross-origin'
+	}
+}))
+
+// protect against HTTP Parameter Pollution attacks
+const whitelist = ['duration', 'difficulty', 'price']
+app.use(hpp({ whitelist }))
 
 app.use('/', viewRouter)
 app.use('/api/v1/tours', tourRouter)
