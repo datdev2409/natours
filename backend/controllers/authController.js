@@ -11,6 +11,28 @@ const generateToken = (data = {}) => {
 	return token
 }
 
+const sendUserToken = (res, user) => {
+	const token = generateToken({id: user.id})
+
+	res.cookie('token', token, {
+		expires: new Date(Date.now() + 360000),
+		httpOnly: true,
+	})
+
+	res.status(200).json({
+		email: user.email,
+		username: user.name,
+		role: user.role,
+		token,
+	})
+}
+
+const filterObj = (obj, fields = []) => {
+	fields.forEach(field => {
+		if (!obj.keys.includes(field)) return 
+	})
+}
+
 class AuthController {
 	login = asyncHandler(async (req, res, next) => {
 		const {email, password} = req.body
@@ -32,20 +54,7 @@ class AuthController {
 		}
 
 		user.rightPassword()
-
-		const token = generateToken({id: user.id})
-
-		res.cookie('token', token, {
-			expires: new Date(Date.now() + 360000),
-			httpOnly: true,
-		})
-
-		res.status(200).json({
-			email: user.email,
-			username: user.name,
-			role: user.role,
-			token,
-		})
+		sendUserToken(res, user)
 	})
 
 	register = asyncHandler(async (req, res, next) => {
@@ -65,17 +74,7 @@ class AuthController {
 		}
 
 		const newUser = await User.create({name, email, password})
-
-		if (newUser) {
-			res.status(200).json({
-				email: newUser.email,
-				username: newUser.name,
-				role: newUser.role,
-				token: generateToken({id: newUser._id}),
-			})
-		} else {
-			throw new AppError('Something went wrong', 400)
-		}
+		sendUserToken(res, newUser)
 	})
 
 	authenticate = asyncHandler(async (req, res, next) => {
