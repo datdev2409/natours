@@ -46,7 +46,7 @@ const tourSchema = new mongoose.Schema({
   priceDiscount: {
     type: Number,
     validate: {
-      validator: function (val) {
+      validator(val) {
         // this only points to current doc on NEW document creation
         return val < this.price;
       },
@@ -123,13 +123,13 @@ tourSchema.virtual('reviews', {
 });
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
-tourSchema.pre('save', function (next) {
+tourSchema.pre('save', function addSlugToTour(next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
 // QUERY MIDDLEWARE
-tourSchema.pre(/^find/, function (next) {
+tourSchema.pre(/^find/, function hideSecretTour(next) {
   this.find({ secretTour: { $ne: true } });
   this.populate({ path: 'guides', select: 'name email photo role' });
   next();

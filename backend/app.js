@@ -1,10 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv').config();
+require('dotenv').config();
 const cookieParser = require('cookie-parser');
-const errorHanlder = require('./middlewares/errorHandler');
-const DB = require('./config/db');
 const path = require('path');
 
 // Security middleware
@@ -14,18 +11,21 @@ const xss = require('xss-clean');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
+const { exit } = require('process');
+const DB = require('./config/db');
+const errorHanlder = require('./middlewares/errorHandler');
 
 // Router
-const tourRouter = require('./tours').tourRoutes;
-const userRouter = require('./users').userRoutes;
-const reviewRouter = require('./reviews').reviewRoutes;
-const authRouter = require('./auth').routes;
-// const viewRouter = require('./routes/viewRouter');
+const tourRouter = require('./api/tours').routes;
+const userRouter = require('./api/users').routes;
+const reviewRouter = require('./api/reviews').routes;
+const authRouter = require('./api/auth').routes;
+const viewRouter = require('./web').routes;
 
 // handle uncaught exception
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception', err.name, err.message);
-  process.exit(1);
+  exit(1);
 });
 
 const app = express();
@@ -57,20 +57,13 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 app.use(xss());
 app.use(cors());
-app.use(
-  helmet({
-    crossOriginResourcePolicy: false,
-    crossOriginResourcePolicy: {
-      policy: 'cross-origin',
-    },
-  })
-);
+app.use(helmet());
 
 // protect against HTTP Parameter Pollution attacks
 const whitelist = ['duration', 'difficulty', 'price'];
 app.use(hpp({ whitelist }));
 
-// app.use('/', viewRouter);
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
@@ -87,11 +80,11 @@ app.all('*', (req, res) => {
 app.use(errorHanlder);
 
 // Handle unhandled rejection
-process.on('unhandledRejection', (err) => {
-  console.log(err.name, err.message);
-  server.close(() => {
-    process.exit(1);
-  });
-});
+// process.on('unhandledRejection', (err) => {
+//   console.log(err.name, err.message);
+//   server.close(() => {
+//     process.exit(1);
+//   });
+// });
 
 module.exports = app;

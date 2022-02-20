@@ -1,4 +1,4 @@
-const AppError = require('./appError');
+const createError = require('http-errors');
 
 exports.getAll = (Model) => async () => {
   const docs = await Model.find({});
@@ -12,7 +12,7 @@ exports.createOne = (Model) => async (body) => {
 
 exports.getOne = (Model) => async (id) => {
   const doc = await Model.findById(id);
-  if (!doc) throw new AppError('No doc found with id', 404);
+  if (!doc) throw createError(404, 'No doc found with id');
   return doc;
 };
 

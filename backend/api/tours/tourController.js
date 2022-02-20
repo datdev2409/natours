@@ -1,5 +1,5 @@
-const tourService = require('./tourService');
 const asyncHandler = require('express-async-handler');
+const tourService = require('./tourService');
 
 exports.getAllTours = asyncHandler(async (req, res) => {
   const tours = await tourService.getAllTours();
@@ -8,7 +8,7 @@ exports.getAllTours = asyncHandler(async (req, res) => {
     status: 'success',
     data: {
       length: tours.length,
-      tours: tours,
+      tours,
     },
   });
 });
@@ -19,26 +19,25 @@ exports.createTour = asyncHandler(async (req, res) => {
   res.status(200).json({
     status: 'success',
     data: {
-      tour: tour,
+      tour,
     },
   });
 });
 
 exports.getTour = asyncHandler(async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const tour = await tourService.getTour(id);
 
   res.status(200).json({
     status: 'success',
     data: {
-      tour: tour,
+      tour,
     },
   });
 });
 
 exports.deleteTour = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-  console.log(id);
+  const { id } = req.params;
   await tourService.deleteTour(id);
 
   res.status(204).json({
@@ -47,13 +46,13 @@ exports.deleteTour = asyncHandler(async (req, res) => {
 });
 
 exports.updateTour = asyncHandler(async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const tour = await tourService.updateTour(id, req.body);
 
   res.status(200).json({
     status: 'success',
     data: {
-      tour: tour,
+      tour,
     },
   });
 });

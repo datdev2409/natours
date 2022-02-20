@@ -1,5 +1,5 @@
-const userService = require('./userService');
 const asyncHandler = require('express-async-handler');
+const userService = require('./userService');
 
 exports.getAllUsers = asyncHandler(async (req, res) => {
   const users = await userService.getAllUsers();
@@ -8,26 +8,25 @@ exports.getAllUsers = asyncHandler(async (req, res) => {
     status: 'success',
     data: {
       length: users.length,
-      users: users,
+      users,
     },
   });
 });
 
 exports.getUser = asyncHandler(async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const user = await userService.getUser(id);
 
   res.status(200).json({
     status: 'success',
     data: {
-      user: user,
+      user,
     },
   });
 });
 
 exports.deleteUser = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-  console.log(id);
+  const { id } = req.params;
   await userService.deleteUser(id);
 
   res.status(204).json({
@@ -36,13 +35,13 @@ exports.deleteUser = asyncHandler(async (req, res) => {
 });
 
 exports.updateUser = asyncHandler(async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const user = await userService.updateUser(id, req.body);
 
   res.status(200).json({
     status: 'success',
     data: {
-      user: user,
+      user,
     },
   });
 });

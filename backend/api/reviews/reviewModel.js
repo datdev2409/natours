@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 const mongoose = require('mongoose');
 const Tour = require('../tours/tourModel');
 
@@ -33,6 +34,7 @@ reviewSchema.set('toObject', { virtuals: true });
 // CREATE INDEXES
 reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
+// eslint-disable-next-line func-names
 reviewSchema.statics.calcAverageRatings = async function (tourId) {
   const stats = await this.aggregate()
     .match({ tour: tourId })
@@ -61,11 +63,11 @@ reviewSchema.pre(/^findOneAnd/, async function () {
 });
 
 reviewSchema.post(/^findOneAnd/, async function () {
-  await Review.calcAverageRatings(this.tourId);
+  await this.constructor.calcAverageRatings(this.tourId);
 });
 
 reviewSchema.post('save', async function () {
-  Review.calcAverageRatings(this.tour);
+  this.constructor.calcAverageRatings(this.tour);
 });
 
 const Review = mongoose.model('Review', reviewSchema);

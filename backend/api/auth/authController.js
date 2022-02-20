@@ -1,5 +1,5 @@
-const authService = require('./authService');
 const asyncHandler = require('express-async-handler');
+const authService = require('./authService');
 
 const sendUserToken = (res, user) => {
   const expiresAfter = 360000;
@@ -9,8 +9,11 @@ const sendUserToken = (res, user) => {
   });
 
   res.status(200).json({
-    name: user.name,
-    email: user.email,
+    status: 'success',
+    data: {
+      name: user.name,
+      email: user.email,
+    },
   });
 };
 
@@ -23,6 +26,5 @@ exports.register = asyncHandler(async (req, res) => {
 exports.login = asyncHandler(async (req, res) => {
   const user = await authService.login(req.body);
 
-  console.log(user);
   sendUserToken(res, user);
 });

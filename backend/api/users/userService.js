@@ -1,5 +1,5 @@
 const User = require('./userModel');
-const base = require('../utils/baseService');
+const base = require('../../utils/baseService');
 
 exports.getAllUsers = base.getAll(User);
 

@@ -1,15 +1,14 @@
 const { body, validationResult } = require('express-validator');
-const AppError = require('../utils/appError');
 const asyncHandler = require('express-async-handler');
+const createError = require('http-errors');
 const authService = require('./authService');
 
 const validatePasswords = (req, res, next) => {
-  const password = req.body.password;
-  const passwordConfirm = req.body.passwordConfirm;
+  const { password, passwordConfirm } = req.body;
   if (password !== passwordConfirm) {
-    return next(new AppError("Password doesn't not match", 403));
+    return next(createError(403, "Password doesn't not match"));
   }
-  next();
+  return next();
 };
 
 const handleErrors = (req, res, next) => {
@@ -17,7 +16,7 @@ const handleErrors = (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(errors);
   }
-  next();
+  return next();
 };
 
 exports.validate = (method) => {
@@ -40,6 +39,10 @@ exports.validate = (method) => {
         handleErrors,
       ];
     }
+
+    default: {
+      return [];
+    }
   }
 };
 
@@ -50,11 +53,11 @@ exports.protect = asyncHandler(async (req, res, next) => {
   next();
 });
 
-exports.restrictTo = (...roles) => {
-  return (req, res, next) => {
+exports.restrictTo =
+  (...roles) =>
+  (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return next(new AppError("Don't have permission to access", 403));
+      return next(createError(403, "Don't have permission to access"));
     }
-    next();
+    return next();
   };
-};

@@ -1,4 +1,4 @@
-const AppError = require('../utils/appError');
+const createError = require('http-errors');
 const Tour = require('./tourModel');
 
 exports.getAllTours = async () => {
@@ -13,7 +13,7 @@ exports.createTour = async (body) => {
 
 exports.getTour = async (id) => {
   const tour = await Tour.findById(id).populate('reviews');
-  if (!tour) throw new AppError('No tour found with id', 404);
+  if (!tour) throw createError(404, 'No tour found with id');
   return tour;
 };
 

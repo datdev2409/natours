@@ -1,5 +1,5 @@
-const reviewService = require('./reviewService');
 const asyncHandler = require('express-async-handler');
+const reviewService = require('./reviewService');
 
 exports.getAllReviews = asyncHandler(async (req, res) => {
   const reviews = await reviewService.getAllReviews();
@@ -8,26 +8,25 @@ exports.getAllReviews = asyncHandler(async (req, res) => {
     status: 'success',
     data: {
       length: reviews.length,
-      reviews: reviews,
+      reviews,
     },
   });
 });
 
 exports.getReview = asyncHandler(async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params.id;
   const review = await reviewService.getReview(id);
 
   res.status(200).json({
     status: 'success',
     data: {
-      review: review,
+      review,
     },
   });
 });
 
 exports.deleteReview = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-  console.log(id);
+  const { id } = req.params.id;
   await reviewService.deleteReview(id);
 
   res.status(204).json({
@@ -36,25 +35,25 @@ exports.deleteReview = asyncHandler(async (req, res) => {
 });
 
 exports.updateReview = asyncHandler(async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params.id;
   const review = await reviewService.updateReview(id, req.body);
 
   res.status(200).json({
     status: 'success',
     data: {
-      review: review,
+      review,
     },
   });
 });
 
 exports.createReview = asyncHandler(async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params.id;
   const review = await reviewService.createReview(id, req.body);
 
   res.status(200).json({
     status: 'success',
     data: {
-      review: review,
+      review,
     },
   });
 });

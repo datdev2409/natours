@@ -1,5 +1,5 @@
 const Review = require('./reviewModel');
-const base = require('../utils/baseService');
+const base = require('../../utils/baseService');
 
 exports.getAllReviews = base.getAll(Review);
 
