@@ -61,3 +61,14 @@ exports.restrictTo =
     }
     return next();
   };
+
+exports.isLoggedIn = async (req, res, next) => {
+  try {
+    const user = await authService.protect(req.body, req.cookies);
+    res.locals.user = user;
+  } catch (error) {
+    console.error(error);
+    return next();
+  }
+  return next();
+};

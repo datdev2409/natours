@@ -28,3 +28,9 @@ exports.updateTour = async (id, body) => {
 
   return tour;
 };
+
+exports.getTourBySlug = async (slug) => {
+  const tour = await Tour.findOne({ slug }).populate('reviews');
+  if (!tour) throw createError(404, 'Tour not found');
+  return tour;
+};
