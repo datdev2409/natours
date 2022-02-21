@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const authService = require('./authService');
 
 const sendUserToken = (res, user) => {
-  const expiresAfter = 360000;
+  const expiresAfter = 3600000;
   res.cookie('token', user.token, {
     expires: new Date(Date.now() + expiresAfter),
     httpOnly: true,

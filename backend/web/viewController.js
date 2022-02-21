@@ -23,7 +23,13 @@ exports.getLoginPage = async (req, res) => {
   res.render('login');
 };
 
-exports.signOut = async (req, res) => {
+exports.logOut = async (req, res) => {
   res.locals.isLogout = true;
   this.getOverview(req, res);
+};
+
+exports.getRegisterPage = (req, res) => {};
+
+exports.getMePage = (req, res) => {
+  res.render('account');
 };
