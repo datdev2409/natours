@@ -59,6 +59,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
   const user = await authService.protect(req.body, req.cookies);
 
   req.user = user;
+  res.locals.user = user;
   next();
 });
 
@@ -73,6 +74,7 @@ exports.restrictTo =
 
 exports.isLoggedIn = async (req, res, next) => {
   try {
+    console.log(req.cookies);
     const user = await authService.protect(req.body, req.cookies);
     res.locals.user = user;
   } catch (error) {

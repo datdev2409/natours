@@ -1,6 +1,5 @@
 // name, email(unique), password, password_confirmation
 const mongoose = require('mongoose');
-const validator = require('validator');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
@@ -82,7 +81,7 @@ userSchema.methods.verifyPassword = async function (plainPassword) {
   return await bcrypt.compare(plainPassword, password);
 };
 
-userSchema.methods.isPasswordChangeAfter = function (JWTTimestamp) {
+userSchema.methods.isPasswordChanged = function (JWTTimestamp) {
   if (!this.passwordChangedAt) return false;
   return Date.parse(this.passwordChangedAt) / 1000 >= JWTTimestamp;
 };

@@ -19,7 +19,7 @@ export const updatePassword = async (
 ) => {
   const data = { password, newPassword, confirmPassword };
   const response = await fetch('/api/v1/auth/password-update', {
-    method: 'PATCH',
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },

@@ -46,11 +46,26 @@ if (infoForm) {
 
 if (passwordForm) {
   passwordForm.addEventListener('submit', async (e) => {
+    $('.btn--save-password').textContent = 'Updating..';
     e.preventDefault();
-    const password = $('#password-current').value;
-    const newPassword = $('#password').value;
-    const confirmPassword = $('#password-confirm').value;
-    const result = await updatePassword(password, newPassword, confirmPassword);
-    location.reload();
+    try {
+      const password = $('#password-current').value;
+      const newPassword = $('#password').value;
+      const confirmPassword = $('#password-confirm').value;
+      const result = await updatePassword(
+        password,
+        newPassword,
+        confirmPassword
+      );
+
+      $('.btn--save-password').textContent = 'Save password';
+      if (result.status === 'success') {
+        location.assign('/login');
+      } else {
+        createAlert('error', 'Change password failed, try again');
+      }
+    } catch (error) {
+      console.error(error);
+    }
   });
 }

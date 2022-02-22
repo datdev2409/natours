@@ -6877,7 +6877,7 @@ var updatePassword = /*#__PURE__*/function () {
             };
             _context2.next = 3;
             return fetch('/api/v1/auth/password-update', {
-              method: 'PATCH',
+              method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -7270,23 +7270,39 @@ if (passwordForm) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
+              $('.btn--save-password').textContent = 'Updating..';
               e.preventDefault();
+              _context3.prev = 2;
               password = $('#password-current').value;
               newPassword = $('#password').value;
               confirmPassword = $('#password-confirm').value;
-              _context3.next = 6;
+              _context3.next = 8;
               return (0, _updateme.updatePassword)(password, newPassword, confirmPassword);
 
-            case 6:
-              result = _context3.sent;
-              location.reload();
-
             case 8:
+              result = _context3.sent;
+              $('.btn--save-password').textContent = 'Save password';
+
+              if (result.status === 'success') {
+                location.assign('/login');
+              } else {
+                (0, _alert.default)('error', 'Change password failed, try again');
+              }
+
+              _context3.next = 16;
+              break;
+
+            case 13:
+              _context3.prev = 13;
+              _context3.t0 = _context3["catch"](2);
+              console.error(_context3.t0);
+
+            case 16:
             case "end":
               return _context3.stop();
           }
         }
-      }, _callee3);
+      }, _callee3, null, [[2, 13]]);
     }));
 
     return function (_x3) {
@@ -7322,7 +7338,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37209" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36493" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

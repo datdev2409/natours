@@ -43,8 +43,8 @@ const getUserWithToken = (user) => {
 };
 
 const getUser = async (query) => {
-  const user = User.findOne(query).select('+password');
-  if (!user) throw new AppError(403, "User doesn't exists");
+  const user = await User.findOne(query).select('+password');
+  if (!user) throw new AppError(403, 'User does not exists');
   return user;
 };
 
@@ -74,10 +74,14 @@ exports.login = async (body) => {
 
 exports.protect = async (body, cookies) => {
   const token = getToken(body, cookies);
-  const { id } = await decodeToken(token);
-  const user = User.findById(id);
+  const { id, iat } = await decodeToken(token);
 
+  const user = await User.findById(id);
   if (!user) throw Error('Authentication failed');
+
+  if (user.isPasswordChanged(iat)) {
+    throw new AppError(404, 'Password changed. Login again!!');
+  }
 
   return user;
 };
