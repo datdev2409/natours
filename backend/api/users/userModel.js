@@ -98,13 +98,13 @@ userSchema.methods.createRandomResetToken = function () {
 };
 
 userSchema.methods.wrongPassword = async function () {
-  if (this.loginAttempts == 1) {
-    return await User.findByIdAndUpdate(this.id, {
+  if (this.loginAttempts === 1) {
+    return this.constructor.findByIdAndUpdate(this.id, {
       lockUntil: Date.now() + 60 * 1000,
       loginAttempts: 10,
     });
   }
-  await User.findByIdAndUpdate(this.id, {
+  await this.constructor.findByIdAndUpdate(this.id, {
     loginAttempts: this.loginAttempts - 1,
   });
 };

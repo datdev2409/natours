@@ -1,12 +1,12 @@
 const { body, validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler');
-const createError = require('http-errors');
+const AppError = require('../../utils/appError');
 const authService = require('./authService');
 
 const validatePasswords = (req, res, next) => {
   const { password, passwordConfirm } = req.body;
   if (password !== passwordConfirm) {
-    return next(createError(403, "Password doesn't not match"));
+    return next(new AppError(403, "Password doesn't not match"));
   }
   return next();
 };
@@ -40,6 +40,15 @@ exports.validate = (method) => {
       ];
     }
 
+    case 'passwordChange': {
+      return [
+        body('password', "Password doesn't not exists").exists(),
+        body('newPassword', 'Please enter new password').exists(),
+        body('confirmPassword', 'Please enter confirm password').exists(),
+        handleErrors,
+      ];
+    }
+
     default: {
       return [];
     }
@@ -57,7 +66,7 @@ exports.restrictTo =
   (...roles) =>
   (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return next(createError(403, "Don't have permission to access"));
+      return next(new AppError(403, "Don't have permission to access"));
     }
     return next();
   };

@@ -1,14 +1,6 @@
-/* eslint-disable no-undef */
-const loginForm = document.querySelector('.login-form');
-const emailField = document.querySelector('#email');
-const passwordField = document.querySelector('#password');
+import createAlert from './alert';
 
-async function login() {
-  const user = {
-    email: emailField.value,
-    password: passwordField.value,
-  };
-
+export async function login(email, password) {
   try {
     const data = await (
       await fetch('/api/v1/auth/login', {
@@ -16,21 +8,23 @@ async function login() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(user),
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       })
     ).json();
 
-    if (data.status === 'fail') {
-      alert('Login Failed');
+    if (data.status === 'success') {
+      createAlert('success', 'Login successfully!!');
+      setTimeout(() => {
+        location.assign('/');
+      }, 1000);
     } else {
-      location.assign('/');
+      createAlert('error', data.message);
+      // console.log(data);
     }
   } catch (error) {
     console.log('Something went wrong');
   }
 }
-
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  await login();
-});

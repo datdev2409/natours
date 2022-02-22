@@ -1,12 +1,13 @@
 const router = require('express').Router();
 const viewController = require('./viewController');
-const { isLoggedIn } = require('../api/auth/authMiddleware');
+const { isLoggedIn, protect } = require('../api/auth/authMiddleware');
 
-router.get('/', isLoggedIn, viewController.getOverview);
+router.use(isLoggedIn);
+router.get('/', viewController.getOverview);
 router.get('/login', viewController.getLoginPage);
-router.get('/logout', viewController.logOut);
+// router.get('/logout', viewController.logOut);
 router.get('/register', viewController.getRegisterPage);
-router.get('/me', isLoggedIn, viewController.getMePage);
-router.get('/tours/:slug', viewController.getTourDetail);
+router.get('/me', viewController.getMePage);
+router.get('/tours/:slug', protect, viewController.getTourDetail);
 
 module.exports = router;

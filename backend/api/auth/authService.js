@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const createError = require('http-errors');
+const AppError = require('../../utils/appError');
 const User = require('../users/userModel');
 const base = require('../../utils/baseService');
 // const sendEmail = require('../utils/email');
@@ -23,36 +23,74 @@ const decodeToken = (token) => {
   });
 };
 
+const getToken = (body, cookies) => {
+  const bodyToken = body.token || 'Bearer';
+  const token = bodyToken.split(' ')[1] || cookies.token;
+
+  if (!token) throw new AppError(403, 'No token found');
+  return token;
+};
+
+const verifyPassword = async (user, password) => {
+  if (!(await user.verifyPassword(password))) {
+    throw new AppError(403, "Password doesn't not match");
+  }
+};
+
+const getUserWithToken = (user) => {
+  const token = generateToken(user.id);
+  return Object.assign(user, { token });
+};
+
+const getUser = async (query) => {
+  const user = User.findOne(query).select('+password');
+  if (!user) throw new AppError(403, "User doesn't exists");
+  return user;
+};
+
+const validateConfirmPassword = (password, confirmPassword) => {
+  if (password !== confirmPassword) {
+    throw new AppError('403', "Password doesn't not match");
+  }
+};
+
 exports.register = async (body) => {
   const exists = await getUserByEmail(body.email);
-  if (exists) throw createError(404, 'User aldready exists');
+  if (exists) throw new AppError(404, 'User aldready exists');
 
   const user = await base.createOne(User)(body);
-  user.token = generateToken(user.id);
-  return user;
+
+  return getUserWithToken(user);
 };
 
 exports.login = async (body) => {
   const { email, password } = body;
-  const user = await getUserByEmail(email).select('+password');
+  const user = await getUser({ email });
 
-  if (!user) throw createError(403, 'User is not exists');
-  if (!(await user.verifyPassword(password))) {
-    throw createError(403, "Password doesn't not match");
-  }
+  await verifyPassword(user, password);
 
-  user.token = generateToken(user.id);
-  return user;
+  return getUserWithToken(user);
 };
 
 exports.protect = async (body, cookies) => {
-  const bodyToken = body.token || 'Bearer';
-  const token = bodyToken.split(' ')[1] || cookies.token;
-
-  if (!token) throw createError(403, 'No token found');
-
+  const token = getToken(body, cookies);
   const { id } = await decodeToken(token);
   const user = User.findById(id);
 
+  if (!user) throw Error('Authentication failed');
+
+  return user;
+};
+
+exports.updatePassword = async (currentUser, body) => {
+  const { password, newPassword, confirmPassword } = body;
+
+  const user = await getUser({ email: currentUser.email });
+
+  await verifyPassword(user, password);
+  validateConfirmPassword(newPassword, confirmPassword);
+
+  user.password = newPassword;
+  await user.save();
   return user;
 };

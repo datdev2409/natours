@@ -63,6 +63,14 @@ app.use(helmet());
 const whitelist = ['duration', 'difficulty', 'price'];
 app.use(hpp({ whitelist }));
 
+app.use((req, res, next) => {
+  res.set(
+    'Content-Security-Policy',
+    "default-src * 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src * 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+  );
+  next();
+});
+
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);

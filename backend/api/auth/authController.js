@@ -28,3 +28,21 @@ exports.login = asyncHandler(async (req, res) => {
 
   sendUserToken(res, user);
 });
+
+exports.logout = asyncHandler(async (req, res) => {
+  res.cookie('token', 'logout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+  });
+});
+
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const currentUser = req.user;
+  const user = await authService.updatePassword(currentUser, req.body);
+
+  sendUserToken(res, user);
+});
