@@ -27,14 +27,13 @@ if ($('#logout')) {
 
 const infoForm = $('.form-user-data');
 const passwordForm = $('.form-user-settings');
+
 if (infoForm) {
   infoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = $('#name').value;
-    const email = $('#email').value;
-    console.log(name, email);
-    const result = await updateMe(name, email);
-    console.log(result);
+    const formData = new FormData(infoForm);
+    const result = await updateMe(formData);
+
     if (result.status === 'success') {
       createAlert('success', 'Change successfully!!');
       setTimeout(() => {

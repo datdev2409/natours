@@ -6825,30 +6825,23 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 var $ = document.querySelector.bind(document);
 
 var updateMe = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(name, email) {
-    var data, response;
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(data) {
+    var response;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            data = {
-              name: name,
-              email: email
-            };
-            _context.next = 3;
+            _context.next = 2;
             return fetch('/api/v1/users/me', {
               method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(data)
+              body: data
             });
 
-          case 3:
+          case 2:
             response = _context.sent;
             return _context.abrupt("return", response.json());
 
-          case 5:
+          case 4:
           case "end":
             return _context.stop();
         }
@@ -6856,7 +6849,7 @@ var updateMe = /*#__PURE__*/function () {
     }, _callee);
   }));
 
-  return function updateMe(_x, _x2) {
+  return function updateMe(_x) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -6896,7 +6889,7 @@ var updatePassword = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function updatePassword(_x3, _x4, _x5) {
+  return function updatePassword(_x2, _x3, _x4) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -7225,21 +7218,18 @@ var passwordForm = $('.form-user-settings');
 if (infoForm) {
   infoForm.addEventListener('submit', /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(e) {
-      var name, email, result;
+      var formData, result;
       return regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
               e.preventDefault();
-              name = $('#name').value;
-              email = $('#email').value;
-              console.log(name, email);
-              _context2.next = 6;
-              return (0, _updateme.updateMe)(name, email);
+              formData = new FormData(infoForm);
+              _context2.next = 4;
+              return (0, _updateme.updateMe)(formData);
 
-            case 6:
+            case 4:
               result = _context2.sent;
-              console.log(result);
 
               if (result.status === 'success') {
                 (0, _alert.default)('success', 'Change successfully!!');
@@ -7248,7 +7238,7 @@ if (infoForm) {
                 }, 500);
               }
 
-            case 9:
+            case 6:
             case "end":
               return _context2.stop();
           }
@@ -7338,7 +7328,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36493" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36507" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

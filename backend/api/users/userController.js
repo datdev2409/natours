@@ -35,6 +35,12 @@ exports.deleteUser = asyncHandler(async (req, res) => {
 });
 
 exports.updateUser = asyncHandler(async (req, res) => {
+  // process file name when user upload image
+  if (req.file) {
+    const photoPath = req.file.filename;
+    req.body.photo = photoPath;
+  }
+
   const { id } = req.params;
   const user = await userService.updateUser(id, req.body);
 
