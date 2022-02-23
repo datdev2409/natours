@@ -1,17 +1,21 @@
 const router = require('express').Router();
-const multer = require('multer');
 const userController = require('./userController');
 const { getMe } = require('./userMiddleware');
 const { protect, restrictTo } = require('../auth').middleware;
-
-const upload = multer({ dest: 'backend/public/img/users' });
+const { upload, resizeUserPhoto } = require('../../utils/uploadImage');
 
 router.route('/').get(protect, restrictTo('admin'), userController.getAllUsers);
 
 router
   .route('/me')
   .get(protect, getMe, userController.getUser)
-  .patch(protect, getMe, upload.single('photo'), userController.updateUser)
+  .patch(
+    protect,
+    getMe,
+    upload.single('photo'),
+    resizeUserPhoto,
+    userController.updateUser
+  )
   .delete(protect, getMe, userController.deleteUser);
 
 router

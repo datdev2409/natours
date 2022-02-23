@@ -74,7 +74,6 @@ exports.restrictTo =
 
 exports.isLoggedIn = async (req, res, next) => {
   try {
-    console.log(req.cookies);
     const user = await authService.protect(req.body, req.cookies);
     res.locals.user = user;
   } catch (error) {
