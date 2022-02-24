@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "./backend/server.js",
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "scripts": {
     "start:dev": "nodemon ./backend/server.js",
     "start": "nodemon ./backend/bin/www",

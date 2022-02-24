@@ -1,10 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const tourService = require('./tourService');
-const {
-  upload,
-  resizeImgs,
-  updateImgName,
-} = require('../../utils/uploadImage');
+const uploadImgs = require('../../utils/uploadImage');
 
 exports.getAllTours = asyncHandler(async (req, res) => {
   const tours = await tourService.getAllTours();
@@ -58,16 +54,19 @@ const tourImgConfig = {
   multiple: true,
 };
 
-exports.uploadTourImgs = (req, res, next) => [
-  upload.fields([
-    { name: 'imageCover', maxCount: 1 },
-    { name: 'images', maxCount: 3 },
-  ]),
-  // eslint-disable-next-line node/no-unsupported-features/es-syntax
-  resizeImgs('imageCover', { ...tourImgConfig, multiple: false }),
-  resizeImgs('images', tourImgConfig),
-  updateImgName,
-];
+exports.uploadTourImgs = uploadImgs(
+  {
+    name: 'imageCover',
+    maxCount: 1,
+    ...tourImgConfig,
+    multiple: false,
+  },
+  {
+    name: 'images',
+    maxCount: 3,
+    ...tourImgConfig,
+  }
+);
 
 exports.updateTour = asyncHandler(async (req, res) => {
   const { id } = req.params;

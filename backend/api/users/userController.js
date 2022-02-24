@@ -1,10 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const userService = require('./userService');
-const {
-  upload,
-  resizeImgs,
-  updateImgName,
-} = require('../../utils/uploadImage');
+const uploadImgs = require('../../utils/uploadImage');
 
 exports.getAllUsers = asyncHandler(async (req, res) => {
   const users = await userService.getAllUsers();
@@ -39,17 +35,11 @@ exports.deleteUser = asyncHandler(async (req, res) => {
   });
 });
 
-exports.uploadUserPhoto = (req, res, next) => [
-  upload.fields([{ name: 'photo', maxCount: 1 }]),
-  resizeImgs('photo', {
-    dir: 'backend/public/img/users',
-    width: 500,
-    height: 500,
-    quality: 90,
-    multiple: false,
-  }),
-  updateImgName,
-];
+exports.uploadUserPhoto = uploadImgs({
+  dir: 'backend/public/img/users',
+  name: 'photo',
+  maxCount: 1,
+});
 
 exports.updateUser = asyncHandler(async (req, res) => {
   // process file name when user upload image

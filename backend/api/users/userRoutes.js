@@ -11,7 +11,7 @@ router
   .patch(
     protect,
     getMe,
-    userController.uploadUserPhoto(),
+    userController.uploadUserPhoto,
     userController.updateUser
   )
   .delete(protect, getMe, userController.deleteUser);
