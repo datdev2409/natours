@@ -12,7 +12,7 @@ router
   .route('/:id')
   .get(tourController.getTour)
   .delete(tourController.deleteTour)
-  .patch(tourController.updateTour);
+  .patch(tourController.uploadTourImgs, tourController.updateTour);
 
 // router.use('/:tourId/reviews', reviewRouter);
 

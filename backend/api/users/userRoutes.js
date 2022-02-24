@@ -2,7 +2,6 @@ const router = require('express').Router();
 const userController = require('./userController');
 const { getMe } = require('./userMiddleware');
 const { protect, restrictTo } = require('../auth').middleware;
-const { upload, resizeUserPhoto } = require('../../utils/uploadImage');
 
 router.route('/').get(protect, restrictTo('admin'), userController.getAllUsers);
 
@@ -12,8 +11,7 @@ router
   .patch(
     protect,
     getMe,
-    upload.single('photo'),
-    resizeUserPhoto,
+    userController.uploadUserPhoto(),
     userController.updateUser
   )
   .delete(protect, getMe, userController.deleteUser);
