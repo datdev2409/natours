@@ -3,7 +3,7 @@
   "plugins": ["prettier"],
   "rules": {
     "class-methods-use-this": "off",
-    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-console": ["allow", { "allow": ["warn", "error"] }],
     "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val" }]
   }
 }
