@@ -1,0 +1,44 @@
+{
+	"name": "natours",
+	"version": "1.0.0",
+	"description": "",
+	"main": "./src/server.js",
+	"scripts": {
+		"start": "nodemon ./src/server.js",
+		"start:prod": "NODE_ENV=production nodemon ./src/server.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+ssh://git@github.com/datdev2409/natours.git"
+	},
+	"author": "congdat <datdev2409@gmail.com>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/datdev2409/natours/issues"
+	},
+	"homepage": "https://github.com/datdev2409/natours#readme",
+	"dependencies": {
+		"bcrypt": "^5.0.1",
+		"cookie-parser": "^1.4.6",
+		"cors": "^2.8.5",
+		"dotenv": "^14.3.2",
+		"express": "^4.17.2",
+		"express-async-handler": "^1.2.0",
+		"express-mongo-sanitize": "^2.2.0",
+		"express-rate-limit": "^6.2.0",
+		"helmet": "^5.0.2",
+		"hpp": "^0.2.3",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^6.1.8",
+		"morgan": "^1.10.0",
+		"nodemailer": "^6.7.2",
+		"pug": "^3.0.2",
+		"slugify": "^1.6.5",
+		"validator": "^13.7.0",
+		"xss-clean": "^0.1.1"
+	},
+	"devDependencies": {
+		"ndb": "^1.1.5",
+		"nodemon": "^2.0.15"
+	}
+}
